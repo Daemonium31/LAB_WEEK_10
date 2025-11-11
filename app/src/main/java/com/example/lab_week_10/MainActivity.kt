@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import com.example.lab_week_10.viewmodels.TotalViewModel
+import androidx.lifecycle.Observer
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,12 +27,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun prepareViewModel() {
-        // No LiveData yet — just manually update the UI
-        updateText(viewModel.total)
+        // Observe LiveData changes
+        viewModel.total.observe(this, Observer { total ->
+            updateText(total)
+        })
 
         findViewById<Button>(R.id.button_increment).setOnClickListener {
-            val newTotal = viewModel.incrementTotal()
-            updateText(newTotal)
+            viewModel.incrementTotal()
         }
     }
 }
