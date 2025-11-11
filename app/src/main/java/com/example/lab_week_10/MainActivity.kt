@@ -1,15 +1,18 @@
 package com.example.lab_week_10
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.widget.Button
 import android.widget.TextView
-import androidx.lifecycle.ViewModelProvider
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.example.lab_week_10.database.Total
 import com.example.lab_week_10.database.TotalDatabase
+import com.example.lab_week_10.database.TotalObject
 import com.example.lab_week_10.viewmodels.TotalViewModel
+import java.util.Date
 
 class MainActivity : AppCompatActivity() {
 
@@ -52,15 +55,21 @@ class MainActivity : AppCompatActivity() {
     private fun initializeValueFromDatabase() {
         val total = db.totalDao().getTotal(ID)
         if (total.isEmpty()) {
-            db.totalDao().insert(Total(id = 1, total = 0))
+            val initialTotal = Total(ID, TotalObject(0, Date().toString()))
+            db.totalDao().insert(initialTotal)
+            Toast.makeText(this, "Initialized at ${initialTotal.total.date}", Toast.LENGTH_SHORT).show()
         } else {
-            viewModel.setTotal(total.first().total)
+            val savedTotal = total.first()
+            viewModel.setTotal(savedTotal.total.value)
+            Toast.makeText(this, "Last updated: ${savedTotal.total.date}", Toast.LENGTH_SHORT).show()
         }
     }
 
     override fun onPause() {
         super.onPause()
-        db.totalDao().update(Total(ID, viewModel.total.value ?: 0))
+        val newTotal = viewModel.total.value ?: 0
+        val updated = Total(ID, TotalObject(newTotal, Date().toString()))
+        db.totalDao().update(updated)
     }
 
     companion object {

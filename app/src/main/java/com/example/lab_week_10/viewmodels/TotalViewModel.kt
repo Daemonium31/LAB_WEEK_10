@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 
 class TotalViewModel : ViewModel() {
 
-    // Backing property pattern for encapsulation
     private val _total = MutableLiveData<Int>()
     val total: LiveData<Int> = _total
 
